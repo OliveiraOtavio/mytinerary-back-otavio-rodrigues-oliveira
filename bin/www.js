@@ -1,10 +1,8 @@
 // IMPORTS
-//var app = require('../app');
 import app from  '../app.js';
-//var debug = require('debug')('mytinerary-back-otavio-rodrigues-oliveira:server');
 import debug from 'debug';
-//var http = require('http');
 import http from 'http';
+import { connect } from 'mongoose';
 
 
 // PORT
@@ -13,15 +11,17 @@ app.set('port', port);
 
 // START SERVING
 let server = http.createServer(app);
-let ready = ()=> console.log('server ready on port ' + port);
+let ready = ()=> {
+  console.log('server ready on port ' + port);
+  connect(process.env.LINK_DB)
+  .then(()=>console.log('database connected'))
+  .catch(err=>console.log(err))
+}
 server.listen(port, ready);
 
 server.on('error', onError);
 server.on('listening', onListening);
 
-/**
- * Normalize a port into a number, string, or false.
- */
 
 function normalizePort(val) {
   let port = parseInt(val, 10);
