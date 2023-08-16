@@ -1,6 +1,6 @@
 import User from "../../models/User.js";
 
-export default async (req, res) => {
+export default async (req, res, next) => {
     try {
         let allUsers = await User.find()
         return res.status(200).json({
@@ -9,10 +9,6 @@ export default async (req, res) => {
             response: allUsers
         })
     } catch (error) {
-        return res.status(400).json ({
-            success: false,
-            message: 'Users not found',
-            response: null
-        })
+        next(error);
     }
 }
