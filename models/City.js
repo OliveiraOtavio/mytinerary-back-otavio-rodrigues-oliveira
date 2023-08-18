@@ -11,6 +11,8 @@ let schema = new Schema({
     smalldescription: { type:String, default:"edit later" },
     featuredLocation: { type:String, default:"edit later" },
     admin_id: { type:Types.ObjectId, required:true, ref:'users' }, // ref:'nombreDeLaColeccion' es para relacionar el dato a la coleccion que necesito
+},{
+    timestamps: true // para agregar la fecha de creacion de los datos
 })
 
 let City = model(collection, schema)
