@@ -14,6 +14,7 @@ import logger from 'morgan';
 import indexRouter from './routes/index.js';
 import notFoundHandler from './middlewares/notFoundHandler.js';
 import errorHandler from './middlewares/errorHandler.js';
+import cors from 'cors'; //Modulo para desbloquear las politicas de cors
 
 let app = express();
 
@@ -26,6 +27,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 //app.use(cookieParser());
+app.use(cors()); // Obligo el servidor a desbloquear la politica de cors
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ROUTER
