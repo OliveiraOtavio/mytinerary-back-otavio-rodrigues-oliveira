@@ -1,44 +1,70 @@
 import City from "../../models/City.js";
 
 export default async (req, res, next) => {
-    try {
-        console.log(req.query)
-        //let objetoDeBusqueda = {} // dentro del {} puedo poner el parametro, por ejemplo el admin_id: 'aca va el object id' (es la forma "Hardcodeada" de hacerlo)
-        let objetoDeBusqueda = {} 
-        let objetoDeOrdenamiento = {}
-        if (req.query.admin_id) { // Query para buscar
-            objetoDeBusqueda.admin_id = req.query.admin_id
-        }
+  try {
+    console.log(req.query);
 
-        if (req.query.city){ // para el filtro de cities
-            objetoDeBusqueda.city = new RegExp('^' + req.query.city, 'i') // el regexp es por SI INCLUYE el termino
-        }
+    let objetoDeBusqueda = {};
+    let objetoDeOrdenamiento = {};
 
-        if (req.query.sort) { // Query para ordenar
-            objetoDeOrdenamiento.City = req.query.sort // si es 1, ordena de manera ascedente y si es -1 lo ordena de manera descendente
-        }
+    objetoDeBusqueda._id = { $ne: "64e157ac7653f025279ca322" };
 
-        let allCities = await City
-                .find(objetoDeBusqueda, 'country city photo smalldescription admin_id')
-                .populate('admin_id', 'photo name mail -_id')
-                .sort(objetoDeOrdenamiento) //primera manera de filtrar es pasando despues del objeto vacio {} lo que quiero filtrar
-       //let allCities = await City.find().select('country city photo smalldescription admin_id').populate('admin_id', 'photo name mail -_id') // Segundo metodo de filtrar
-
-       // condicional para que no devuelva un Array vacio
-        if (allCities.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: "No cities found with your search terms",
-                response: []
-            })
-        }
-
-        return res.status(200).json({
-            success: true,
-            message: 'Cities found',
-            response: allCities
-        })
-    } catch (error) {
-        next(error)
+    if (req.query.admin_id) {
+      objetoDeBusqueda.admin_id = req.query.admin_id;
     }
-}
+
+    let cityExists = null;
+
+    if (req.query.city) {
+      objetoDeBusqueda.city = new RegExp("^" + req.query.city, "i");
+
+      cityExists = await City.findOne({
+        city: new RegExp("^" + req.query.city, "i"),
+      });
+    }
+
+    if (req.query.sort) {
+      objetoDeOrdenamiento.city = req.query.sort;
+    }
+
+    let allCities = await City.find(
+      objetoDeBusqueda,
+      "country city photo smalldescription admin_id"
+    )
+      .populate("admin_id", "photo name mail -_id")
+      .sort(objetoDeOrdenamiento);
+
+    if (allCities.length === 0 && req.query.city) {
+      let notFoundCard = await City.findById("64e157ac7653f025279ca322").select(
+        "photo city country"
+      );
+      if (notFoundCard) {
+        return res.status(200).json({
+          success: true,
+          message: "Not found card",
+          response: [notFoundCard],
+        });
+      } else {
+        return res.status(404).json({
+          success: false,
+          message: "City not found and base card is missing.",
+          response: [],
+        });
+      }
+    } else if (allCities.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No cities found",
+        response: [],
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Cities found",
+      response: allCities,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
