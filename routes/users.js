@@ -19,7 +19,7 @@ let router = express.Router();
 //router.metodo('/', funcion)
 
 //CREATE
-router.post('/', create)
+router.post('/signup', create)
 
 //READ
 router.get('/', read)

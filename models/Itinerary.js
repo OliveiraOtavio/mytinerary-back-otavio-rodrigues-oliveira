@@ -10,6 +10,8 @@ let schema = new Schema({
     photo: { type:String, required:true },
     
     
+},{
+    timestamps: true // para agregar la fecha de creacion de los datos
 })
 
 let Itinerary = model(collection, schema)
