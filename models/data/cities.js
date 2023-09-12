@@ -141,13 +141,4 @@ async function createCities(arrayCities) {
     }
 }
 
-//abajo esta el metodo utilizado en users
-
-// connect(process.env.LINK_DB)
-//     .then(()=>{
-//         City.insertMany(cities)
-//         console.log('done!')
-//     })
-//     .catch(err => console.log(err))
-
 createCities(cities)
